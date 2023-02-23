@@ -89,7 +89,7 @@ func handleConn(conn *net.TCPConn) error {
 
 // 处理请求
 func handle(req []byte) ([]byte, error) {
-	return nil, nil
+	return req, nil
 }
 
 func write(conn *net.TCPConn, rsp []byte) error {
