@@ -2,4 +2,6 @@ module myrpc
 
 go 1.18
 
-require gopkg.in/masci/flickr.v2 v2.0.0-20221121132854-6a20b66dde94
+require github.com/vmihailenco/msgpack/v5 v5.3.5
+
+require github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
