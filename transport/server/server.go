@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"plugin"
 	"time"
 )
 
@@ -12,6 +13,22 @@ type ServerOption struct {
 	Addr    string // e.g:127.0.0.1:8000
 	NetWork string // tcp/udp
 	TimeOut time.Duration
+}
+type Server struct {
+	opts *ServerOption
+	// service service.Service
+	// name    string
+	plugins []plugin.Plugin
+
+	closing bool // whether the server is closing
+}
+
+func NewServer(opt ...ServerOption) *Server {
+	s := &Server{
+		opts: &ServerOption{},
+	}
+	// s.service = service.NewService()
+	return s
 }
 
 func ListenAndServe(option ServerOption) error {
