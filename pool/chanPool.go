@@ -3,6 +3,7 @@ package pool
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"sync"
@@ -20,24 +21,6 @@ type chanPool struct {
 	maxCap      int
 	maxIdle     int
 	inflight    int32
-}
-
-func (ch *chanPool) Put(conn *Conn) error {
-	if conn == nil {
-		return errors.New("connection closed")
-	}
-	ch.mu.Lock()
-	defer ch.mu.Unlock()
-	if ch.conns == nil {
-		conn.Makeunable()
-		conn.Close() // 不存在管道直接关闭
-	}
-	select {
-	case ch.conns <- conn:
-		return nil
-	default:
-		return conn.Conn.Close()
-	}
 }
 
 func (ch *chanPool) Get(ctx context.Context) (*Conn, error) {
@@ -80,14 +63,59 @@ func (ch *chanPool) Get(ctx context.Context) (*Conn, error) {
 		return ch.wrapConn(conn), nil
 	}
 }
+func (ch *chanPool) Put(conn *Conn) error {
+	if conn == nil {
+		return errors.New("connection closed")
+	}
+	ch.mu.Lock()
+	defer ch.mu.Unlock()
+	if ch.conns == nil {
+		conn.Makeunable()
+		conn.Close() // 不存在管道直接关闭
+	}
+	select {
+	case ch.conns <- conn:
+		return nil
+	default:
+		return conn.Conn.Close()
+	}
+}
 
 func (ch *chanPool) wrapConn(conn net.Conn) *Conn {
 	p := &Conn{
 		ch:          ch,
 		t:           time.Now(),
 		dialTimeout: ch.dialTimeout,
+		Conn:        conn,
 	}
 	return p
+}
+func (c *chanPool) RegisterChecker(internal time.Duration, checker func(conn *Conn) bool) {
+	if internal <= 0 || checker == nil {
+		return
+	}
+
+	go func() {
+		for {
+			time.Sleep(internal)
+			length := len(c.conns)
+			for i := 0; i < length; i++ {
+				select {
+				case p := <-c.conns:
+					if !checker(p) {
+						p.Makeunable()
+						p.Close()
+					} else {
+						err := c.Put(p)
+						if err != nil {
+							fmt.Printf("put err: %v", err)
+						}
+					}
+				default:
+				}
+			}
+		}
+	}()
 }
 
 func (ch *chanPool) Check(cn *Conn) bool {

@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var ErrConnClosed = errors.New("connection closed")
+
 type Conn struct {
 	Conn        net.Conn
 	ch          *chanPool

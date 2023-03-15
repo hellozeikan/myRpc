@@ -58,3 +58,7 @@ func (s *service) Add(a, b int) int {
 func (s *service) Mut(a, b int) int {
 	return a * b
 }
+
+func test() {
+
+}
