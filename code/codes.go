@@ -1,61 +1,68 @@
 package code
 
-import "fmt"
-
-const (
-	OK                           = 0
-	ServerInternalErrorCode      = 100
-	ConfigErrorCode              = 101
-	NetworkNotSupportedErrorCode = 201
-	ClientMsgErrorCode           = 301
-	ClientCertFail               = 401
+import (
+	"bytes"
+	"encoding/binary"
 )
 
-// errorcode type
-const (
-	FrameworkError = 1
-	BusinuessError = 2
-)
-
-var (
-	ServerInternalError      = NewFrameworkError(ServerInternalErrorCode, "server internal error")
-	ConfigError              = NewFrameworkError(ConfigErrorCode, "config error")
-	NetworkNotSupportedError = NewFrameworkError(NetworkNotSupportedErrorCode, "network type not supported")
-	ClientCertFailError      = NewFrameworkError(ClientCertFail, "client cert fail")
-)
-
-type Error struct {
-	Code    uint32
-	Type    int
-	Message string
+type Codec interface {
+	Encode([]byte) ([]byte, error)
+	Decode([]byte) ([]byte, error)
 }
 
-const Success = "success"
-
-func (e *Error) Error() string {
-	if e == nil {
-		return Success
-	}
-	if e.Type == FrameworkError {
-		return fmt.Sprintf("type : framework, code : %d, msg : %s", e.Code, e.Message)
-	}
-	return fmt.Sprintf("type : business, code : %d, msg : %s", e.Code, e.Message)
+type FrameHeader struct {
+	Length uint32 // total packet length
 }
 
-// new a framework type error
-func NewFrameworkError(code uint32, msg string) *Error {
-	return &Error{
-		Type:    FrameworkError,
-		Code:    code,
-		Message: msg,
+// GetCodec get a Codec by a codec name
+func GetCodec(name string) Codec {
+	if codec, ok := codecMap[name]; ok {
+		return codec
 	}
+	return DefaultCodec
 }
 
-// new a business type error
-func New(code uint32, msg string) *Error {
-	return &Error{
-		Type:    BusinuessError,
-		Code:    code,
-		Message: msg,
-	}
+var codecMap = make(map[string]Codec)
+
+var DefaultCodec = NewCodec()
+
+var NewCodec = func() Codec {
+	return &defaultCodec{}
 }
+
+func init() {
+	RegisterCodec("proto", DefaultCodec)
+}
+
+// RegisterCodec registers a codec, which will be added to codecMap
+func RegisterCodec(name string, codec Codec) {
+	if codecMap == nil {
+		codecMap = make(map[string]Codec)
+	}
+	codecMap[name] = codec
+}
+
+func (c *defaultCodec) Encode(data []byte) ([]byte, error) {
+	totalLen := FrameHeadLen + len(data)
+	buffer := bytes.NewBuffer(make([]byte, 0, totalLen))
+
+	frame := FrameHeader{
+		Length: uint32(len(data)),
+	}
+
+	if err := binary.Write(buffer, binary.BigEndian, frame.Length); err != nil {
+		return nil, err
+	}
+
+	if err := binary.Write(buffer, binary.BigEndian, data); err != nil {
+		return nil, err
+	}
+
+	return buffer.Bytes(), nil
+}
+
+func (c *defaultCodec) Decode(frame []byte) ([]byte, error) {
+	return frame[FrameHeadLen:], nil
+}
+
+type defaultCodec struct{}
