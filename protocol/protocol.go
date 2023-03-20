@@ -11,3 +11,8 @@ type RpcError struct {
 	Method    string `msgpack:"method"`
 	Message   string `msgpack:"message"`
 }
+
+// Error implements error
+func (r RpcError) Error() string {
+	return r.Message
+}
