@@ -11,7 +11,7 @@ import (
 var ErrConnClosed = errors.New("connection closed")
 
 type Conn struct {
-	Conn        net.Conn
+	net.Conn
 	ch          *chanPool
 	unable      bool
 	mu          sync.Mutex

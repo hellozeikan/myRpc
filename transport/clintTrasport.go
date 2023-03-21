@@ -64,7 +64,7 @@ func (c *clientTransport) SendTcpReq(ctx context.Context, req []byte) ([]byte, e
 	}
 
 	conn, err := c.opts.Pool.Get(ctx, addr)
-	// conn, err := net.DialTimeout("tcp", addr, c.opts.Timeout);
+	// conn, err := net.DialTimeout("tcp", addr, c.opts.Timeout)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (c *clientTransport) SendTcpReq(ctx context.Context, req []byte) ([]byte, e
 		if err != nil {
 			// todo this have a error message
 			if errors.Is(err, syscall.EPIPE) {
-				log.Fatal("This is broken pipe error")
+				log.Printf("This is broken pipe error")
 			}
 			return nil, err
 		}
@@ -90,17 +90,16 @@ func (c *clientTransport) SendTcpReq(ctx context.Context, req []byte) ([]byte, e
 	}
 
 	// parse frame
-	// wrapperConn := wrapConn(conn)
-	// frame, err := wrapperConn.framer.ReadFrame(conn)
-	// if err != nil {
-	// 	if errors.Is(err, syscall.ECONNRESET) {
-	// 		log.Fatal("This is connection reset by peer error: ", err)
-	// 	}
-	// 	return nil, err
-	// }
+	wrapperConn := wrapConn(conn)
+	frame, err := wrapperConn.framer.ReadFrame(conn)
+	if err != nil {
+		if errors.Is(err, syscall.ECONNRESET) {
+			log.Println("This is connection reset by peer error: ", err)
+		}
+		return nil, err
+	}
 
-	// return frame, nil
-	return nil, nil
+	return frame, nil
 }
 
 func isDone(ctx context.Context) error {
