@@ -58,7 +58,7 @@ func (s *serverTransport) ListenAndServe(ctx context.Context, opts ...ServerTran
 
 	go func() {
 		if err = s.serve(ctx, lis); err != nil {
-			log.Fatalf("transport serve error, %v", err)
+			log.Printf("transport serve error, %v", err)
 		}
 	}()
 
@@ -66,7 +66,7 @@ func (s *serverTransport) ListenAndServe(ctx context.Context, opts ...ServerTran
 	if err != nil {
 		return err
 	}
-	log.Fatalf("server listening on %s\n", addr)
+	log.Printf("server listening on %s\n", addr)
 
 	return nil
 }
@@ -111,19 +111,19 @@ func (s *serverTransport) serve(ctx context.Context, lis net.Listener) error {
 		if s.opts.KeepAlivePeriod != 0 {
 			err := conn.SetKeepAlivePeriod(s.opts.KeepAlivePeriod)
 			if err != nil {
-				log.Fatalf("SetKeepAlivePeriod error: %v", err)
+				log.Printf("SetKeepAlivePeriod error: %v", err)
 			}
 		}
 
 		go func() {
 			defer func() {
 				if err := recover(); err != nil {
-					log.Fatalf("panic: %v", err)
+					log.Printf("panic: %v", err)
 				}
 			}()
 
 			if err := s.handleConn(ctx, wrapConn(conn)); err != nil {
-				log.Fatalf("mrpc handle tcp conn error, %v", err)
+				log.Printf("mrpc handle tcp conn error, %v", err)
 			}
 		}()
 	}
@@ -152,7 +152,7 @@ func (s *serverTransport) handleConn(ctx context.Context, conn *connWrapper) err
 
 		rsp, err := s.handle(ctx, frame)
 		if err != nil {
-			log.Fatalf("s.handle err is not nil, %v", err)
+			log.Printf("s.handle err is not nil, %v", err)
 		}
 
 		if err = s.write(ctx, conn, rsp); err != nil {
@@ -178,19 +178,19 @@ func (s *serverTransport) handle(ctx context.Context, frame []byte) ([]byte, err
 
 	reqbuf, err := serverCodec.Decode(frame)
 	if err != nil {
-		log.Fatalf("server Decode error: %v", err)
+		log.Printf("server Decode error: %v", err)
 		return nil, err
 	}
 
 	rspbuf, err := s.opts.Handler.Handle(ctx, reqbuf)
 	if err != nil {
 		// todo: handle error
-		log.Fatalf("server Handle error: %v", err)
+		log.Printf("server Handle error: %v", err)
 	}
 
 	rspbody, err := serverCodec.Encode(rspbuf)
 	if err != nil {
-		log.Fatalf("server Encode error, response: %v, err: %v", rspbuf, err)
+		log.Printf("server Encode error, response: %v, err: %v", rspbuf, err)
 		return nil, err
 	}
 
@@ -199,7 +199,7 @@ func (s *serverTransport) handle(ctx context.Context, frame []byte) ([]byte, err
 
 func (s *serverTransport) write(ctx context.Context, conn net.Conn, rsp []byte) error {
 	if _, err := conn.Write(rsp); err != nil {
-		log.Fatalf("conn Write err: %v", err)
+		log.Printf("conn Write err: %v", err)
 	}
 
 	return nil

@@ -1,4 +1,4 @@
-package cilent
+package client
 
 import (
 	"context"

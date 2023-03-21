@@ -35,7 +35,7 @@ func (p *Conn) Close() error {
 	}
 	err := p.Conn.SetDeadline(time.Time{})
 	if err != nil {
-		log.Fatalf("SetDeadline error: %v\n", err)
+		log.Printf("SetDeadline error: %v\n", err)
 	}
 	return p.ch.Put(p)
 }

@@ -77,7 +77,7 @@ func (s *service) Serve(opts *ServerOptions) {
 	serverTransport := transport.DefaultServerTransport
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 	if err := serverTransport.ListenAndServe(s.ctx, transportOpts...); err != nil {
-		log.Fatalf("tcp serve error, %v", err)
+		log.Printf("tcp serve error, %v", err)
 		return
 	}
 

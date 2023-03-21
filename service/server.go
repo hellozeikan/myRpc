@@ -71,7 +71,7 @@ func getServiceMethods(serviceType reflect.Type, serviceValue reflect.Value) ([]
 
 	for i := 0; i < serviceType.NumMethod(); i++ {
 		method := serviceType.Method(i)
-
+		fmt.Println(method.Type)
 		if err := checkMethod(method.Type); err != nil {
 			return nil, err
 		}
@@ -124,6 +124,7 @@ func getServiceMethods(serviceType reflect.Type, serviceValue reflect.Value) ([]
 
 func checkMethod(method reflect.Type) error {
 	// params num must >= 2 , needs to be combined with itself
+	fmt.Println(method.NumIn())
 	if method.NumIn() < 3 {
 		return fmt.Errorf("method %s invalid, the number of params < 2", method.Name())
 	}
@@ -169,7 +170,7 @@ func (s *Server) Register(sd *ServiceDesc, svr interface{}) {
 	ht := reflect.TypeOf(sd.HandlerType).Elem()
 	st := reflect.TypeOf(svr)
 	if !st.Implements(ht) {
-		log.Fatalf("handlerType %v not match service : %v ", ht, st)
+		log.Printf("handlerType %v not match service : %v ", ht, st)
 	}
 
 	if s.service == nil {
