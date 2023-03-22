@@ -136,9 +136,8 @@ func (c *defaultClient) invoke(ctx context.Context, req, rsp interface{}) error 
 		}
 		return e
 	}
-
 	// 转结构体
-	return mapstructure.Decode(respp[len(respp)-1], &rsp)
+	return mapstructure.Decode(respp[len(respp)-1], rsp)
 }
 
 func (c *defaultClient) NewClientTransport() transport.ClientTransport {

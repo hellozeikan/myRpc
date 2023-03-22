@@ -16,7 +16,7 @@ func main() {
 
 	req := &Request{
 		A: 1111,
-		B: 24141413,
+		B: 2222,
 	}
 	var err error
 	rsp := &Response{}
