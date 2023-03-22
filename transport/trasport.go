@@ -42,10 +42,7 @@ func (f *framer) ReadFrame(conn net.Conn) ([]byte, error) {
 		return nil, code.NewFrameworkError(code.ClientMsgErrorCode, "payload too large...")
 	}
 
-	for uint32(len(f.buffer)) < length && f.counter <= 12 {
-		f.buffer = make([]byte, len(f.buffer)*2)
-		f.counter++
-	}
+	f.buffer = make([]byte, tableSizeFor(int(length)))
 
 	if num, err := io.ReadFull(conn, f.buffer[:length]); uint32(num) != length || err != nil {
 		return nil, err
@@ -81,19 +78,19 @@ func (f *framer) Resize() {
 // 	return append(frameHeader, buffer[:length]...), nil
 // }
 
-// // 通过位移31次（1+2+4+8+16）以及或运算，把当前最高位下面的二进制都填满1，这样再加1以后就能得到比原先高一位的数字
-// func tableSizeFor(source int) int {
-// 	maxCapacity := 1 << 30
-// 	n := source - 1
-// 	n |= n >> 1
-// 	n |= n >> 2
-// 	n |= n >> 4
-// 	n |= n >> 8
-// 	n |= n >> 16
-// 	if n < 0 {
-// 		return 1
-// 	} else if n >= maxCapacity {
-// 		return maxCapacity
-// 	}
-// 	return n + 1
-// }
+// 通过位移31次（1+2+4+8+16）以及或运算，把当前最高位下面的二进制都填满1，这样再加1以后就能得到比原先高一位的数字
+func tableSizeFor(source int) int {
+	maxCapacity := 1 << 30
+	n := source - 1
+	n |= n >> 1
+	n |= n >> 2
+	n |= n >> 4
+	n |= n >> 8
+	n |= n >> 16
+	if n < 0 {
+		return 1
+	} else if n >= maxCapacity {
+		return maxCapacity
+	}
+	return n + 1
+}
