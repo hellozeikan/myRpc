@@ -19,14 +19,18 @@ func main() {
 		B: 2222,
 	}
 	var err error
-	rsp := &Response{}
-	err = c.Call(context.Background(), "helloworld.Greeter.Add", req, rsp, opts...)
-	fmt.Printf("%+v\n", rsp)
-	fmt.Println(err)
-	rsp1 := &HelloReply{}
-	err = c.Call(context.Background(), "helloworld.Greeter.SayHello", req, rsp1, opts...)
+	rsp1 := &Response{}
+	err = c.Call(context.Background(), "helloworld.Greeter.Add", req, rsp1, opts...)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Printf("%+v\n", rsp1)
-	fmt.Println(err)
+	rsp2 := &HelloReply{}
+	err = c.Call(context.Background(), "helloworld.Greeter.SayHello", req, rsp2, opts...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", rsp2)
 }
 
 type Request struct {
