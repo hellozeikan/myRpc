@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"myrpc/client"
 	"time"
+
+	"github.com/hellozeikan/myrpc/client"
 )
 
 func main() {

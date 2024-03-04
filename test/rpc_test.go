@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"myrpc/client"
 	"testing"
 	"time"
+
+	"github.com/hellozeikan/myrpc/client"
 )
 
 func TestRPC(t *testing.T) {

@@ -1,8 +1,9 @@
 package service
 
 import (
-	"myrpc/interceptor"
 	"time"
+
+	"github.com/hellozeikan/myrpc/interceptor"
 )
 
 type ServerOptions struct {

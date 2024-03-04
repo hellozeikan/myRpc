@@ -1,8 +1,9 @@
 package transport
 
 import (
-	"myrpc/pool"
 	"time"
+
+	"github.com/hellozeikan/myrpc/pool"
 )
 
 type ClientTransportOptions struct {

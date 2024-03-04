@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"myrpc/interceptor"
-	"myrpc/protocol"
 	"os"
 	"os/signal"
 	"reflect"
 	"strings"
 	"syscall"
+
+	"github.com/hellozeikan/myrpc/interceptor"
+	"github.com/hellozeikan/myrpc/protocol"
 )
 
 type Server struct {

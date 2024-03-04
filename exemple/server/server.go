@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"myrpc/service"
 	"time"
+
+	"github.com/hellozeikan/myrpc/service"
 )
 
 func main() {

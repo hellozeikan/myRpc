@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"myrpc/code"
-	"myrpc/interceptor"
-	"myrpc/protocol"
-	"myrpc/transport"
 	"strings"
+
+	"github.com/hellozeikan/myrpc/code"
+	"github.com/hellozeikan/myrpc/interceptor"
+	"github.com/hellozeikan/myrpc/protocol"
+	"github.com/hellozeikan/myrpc/transport"
 
 	"github.com/goinggo/mapstructure"
 )

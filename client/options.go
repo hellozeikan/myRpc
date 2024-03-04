@@ -1,8 +1,9 @@
 package client
 
 import (
-	"myrpc/interceptor"
 	"time"
+
+	"github.com/hellozeikan/myrpc/interceptor"
 )
 
 type Options struct {

@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/binary"
 	"io"
-	"myrpc/code"
 	"net"
+
+	"github.com/hellozeikan/myrpc/code"
 )
 
 const DefaultPayloadLength = 1024

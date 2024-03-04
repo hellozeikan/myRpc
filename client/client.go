@@ -3,13 +3,15 @@ package client
 import (
 	"context"
 	"math"
-	"myrpc/code"
-	"myrpc/interceptor"
-	"myrpc/pool"
-	"myrpc/protocol"
 
-	"myrpc/transport"
+	"github.com/hellozeikan/myrpc/code"
+	"github.com/hellozeikan/myrpc/interceptor"
+	"github.com/hellozeikan/myrpc/pool"
+	"github.com/hellozeikan/myrpc/protocol"
+
 	"strconv"
+
+	"github.com/hellozeikan/myrpc/transport"
 
 	"github.com/goinggo/mapstructure"
 	// "github.com/goinggo/mapstructure"
